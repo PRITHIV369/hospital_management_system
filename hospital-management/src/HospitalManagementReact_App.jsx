@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts'
 import { motion } from 'framer-motion'
-
+import axios from "axios";
 
 const uid = (prefix = '') => `${prefix}${Math.random().toString(36).slice(2, 9)}`
 const todayISO = () => new Date().toISOString().slice(0, 10)
@@ -493,6 +493,23 @@ function Login({ onLogin }) {
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
 
+  const handleLogin=async(e)=>{
+    e.preventDefault();
+    try{
+        const res=await axios.post("http://127.0.0.1:8000/auth/login",{
+            email:email,
+            password:pass
+        }
+        )
+        if(res.status===200){
+            onLogin({ email })
+        }
+    }
+    catch(err){
+        console.log("Error");
+    }
+  }
+
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-400 to-indigo-600">
       <div className="bg-white p-8 rounded shadow w-96">
@@ -502,7 +519,7 @@ function Login({ onLogin }) {
         <label className="block text-sm text-gray-600 mb-1">Password</label>
         <input type="password" className="w-full border px-3 py-2 rounded mb-4" value={pass} onChange={e => setPass(e.target.value)} />
         <div className="flex gap-2">
-          <button className={btnPrimary} onClick={() => onLogin({ email })}>Login</button>
+          <button className={btnPrimary} onClick={handleLogin}>Login</button>
           <button className={btnSecondary} onClick={() => { setEmail('guest@clinic.com'); setPass('guest') }}>Guest</button>
         </div>
       </div>
